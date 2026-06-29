@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Línea de Tiempo con Agenda e Historial</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="timeline-wrapper">
+        <!-- NIVEL 1: AÑOS -->
+        <div class="timeline-container" id="container-years">
+            <div class="timeline-track" id="track-years">
+                <button class="timeline-item year-item" onclick="selectYear(this)">2026</button>
+            </div>
+        </div>
+
+        <!-- NIVEL 2: MESES -->
+        <div class="timeline-container hide" id="container-months">
+            <div class="timeline-track" id="track-months"></div>
+        </div>
+
+        <!-- NIVEL 3: DÍAS -->
+        <div class="timeline-container hide" id="container-days">
+            <div class="timeline-track" id="track-days"></div>
+        </div>
+
+        <!-- PANEL DE NOTAS -->
+        <div class="note-container hide" id="note-panel">
+            <input type="text" id="note-input" placeholder="ESCRIBIR NOTA ACÁ" autocomplete="off">
+            <button id="note-delete" onclick="deleteNote()">BORRAR</button>
+            <button id="note-submit" onclick="saveNote()">CREAR<br>NOTA</button>
+        </div>
+
+        <!-- LÍNEA DE TIEMPO GRÁFICA INFERIOR -->
+        <div class="graphical-timeline-container hide" id="graph-panel">
+            <canvas id="timeline-canvas" width="600" height="120"></canvas>
+        </div>
+
+        <!-- SECCIÓN DE PRÓXIMOS EVENTOS -->
+        <div class="events-container hide" id="events-panel">
+            <h3>PRÓXIMOS EVENTOS</h3>
+            <div id="events-list"></div>
+        </div>
+
+        <!-- NUEVO: SECCIÓN DE HISTORIAL DE EVENTOS PASADOS -->
+        <div class="events-container hide" id="history-panel">
+            <h3>HISTORIAL DE EVENTOS</h3>
+            <div id="history-list"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

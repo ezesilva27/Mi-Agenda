@@ -1,0 +1,226 @@
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f5f5f5;
+    font-family: sans-serif;
+    padding: 20px 0;
+}
+
+.timeline-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    max-width: 600px;
+    background: #fff;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.timeline-container {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 15px 0;
+    scrollbar-width: none; 
+    transition: all 0.5s ease;
+    border-radius: 8px;
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.timeline-container::-webkit-scrollbar {
+    display: none;
+}
+
+.timeline-container.hide, .note-container.hide, .graphical-timeline-container.hide, .events-container.hide {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-10px);
+    height: 0;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+}
+
+.timeline-track {
+    display: flex;
+    gap: 40px;
+    padding: 0 50%; 
+}
+
+.timeline-item {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    color: #bbb;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    white-space: nowrap;
+    outline: none;
+}
+
+.year-item { font-size: 1.8rem; font-weight: bold; }
+.month-item { font-size: 1.3rem; text-transform: uppercase; }
+.day-item { font-size: 1.1rem; }
+
+.timeline-item.active {
+    color: #007bff;
+    font-weight: bold;
+    transform: scale(1.2);
+}
+
+/* SECCIÓN DE NOTAS */
+.note-container {
+    display: flex;
+    background-color: rgba(0, 0, 0, 0.02);
+    border-radius: 8px;
+    height: 55px;
+    margin-top: 5px;
+    overflow: hidden;
+    transition: all 0.5s ease;
+}
+
+#note-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 0 20px;
+    font-size: 1.1rem;
+    color: #333;
+    outline: none;
+}
+
+#note-input::placeholder {
+    color: #bbb;
+    font-style: italic;
+}
+
+#note-submit {
+    width: 120px;
+    background-color: rgba(0, 0, 0, 0.04);
+    border: none;
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #555;
+    cursor: pointer;
+    text-transform: uppercase;
+    line-height: 1.3;
+    transition: all 0.2s;
+}
+
+#note-submit.edit-mode {
+    background-color: #ffc107;
+    color: #333;
+}
+
+#note-submit:hover {
+    opacity: 0.9;
+}
+
+/* GRÁFICO INFERIOR */
+.graphical-timeline-container {
+    width: 100%;
+    margin-top: 10px;
+    background-color: rgba(0, 0, 0, 0.01);
+    border-radius: 12px;
+    padding: 10px 0;
+    transition: opacity 0.5s ease;
+}
+
+canvas {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* LISTA DE EVENTOS */
+.events-container {
+    margin-top: 10px;
+    transition: all 0.5s ease;
+}
+
+.events-container h3 {
+    font-size: 0.9rem;
+    color: #888;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+
+#events-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.event-card {
+    display: flex;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.02);
+    padding: 12px 15px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: #333;
+    cursor: pointer; /* Indica que es clickeable */
+    transition: background 0.2s, transform 0.2s;
+}
+
+.event-card:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+    transform: translateX(3px);
+}
+
+.event-date {
+    font-weight: bold;
+    color: #007bff;
+    margin-right: 15px;
+    min-width: 65px;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+}
+
+.event-text {
+    flex: 1;
+}
+
+/* REQUERIMIENTO 3: DISEÑO DEL CONTADOR */
+.event-countdown {
+    font-size: 0.8rem;
+    color: #28a745;
+    background-color: rgba(40, 167, 69, 0.1);
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-weight: bold;
+}
+#note-delete {
+    width: 90px;
+    background-color: rgba(255, 59, 48, 0.05);
+    border: none;
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #ff3b30;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background 0.2s, color 0.2s;
+}
+
+#note-delete:hover {
+    background-color: #ff3b30;
+    color: #fff;
+}
+/* Estilos específicos para las tarjetas del historial pasado */
+.event-card.past {
+    background-color: rgba(0, 0, 0, 0.01);
+    opacity: 0.7;
+}
+
+.event-card.past .event-date {
+    color: #666; /* Fecha gris en lugar de azul */
+}
+
+.event-card.past .event-text {
+    color: #555;
+}
