@@ -4,7 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Línea de Tiempo Sincronizada en la Nube</title>
+    
+    <!-- Vinculamos los estilos CSS -->
     <link rel="stylesheet" href="style.css">
+
+    <!-- CORRECCIÓN CLAVE: Cargamos las librerías de Firebase ARRIBA para que estén listas antes que tu script -->
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
 </head>
 <body>
 
@@ -51,11 +57,7 @@
         </div>
     </div>
 
-    <!-- CONEXIONES COMPLEMENTARIAS: Cargamos las librerías de Firebase de Google -->
-    <script src="https://gstatic.com"></script>
-    <script src="https://gstatic.com"></script>
-    
-    <!-- NUESTRO SCRIPT CON TU LOGICA -->
+    <!-- Vinculamos tu archivo lógico abajo de todo -->
     <script src="script.js"></script>
 </body>
 </html>
