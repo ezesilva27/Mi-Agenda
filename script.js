@@ -10,7 +10,7 @@ const realYear = fechaDeHoy.getFullYear();
 const realMonthIdx = fechaDeHoy.getMonth();
 const realDayNum = fechaDeHoy.getDate();
 
-// 2. CONFIGURACIÓN CON TU SERVIDOR REAL DE ESTADOS UNIDOS (Corregido)
+// 2. CONFIGURACIÓN CON TU URL REAL DE LA FOTO (Corregido sin errores)
 const firebaseConfig = {
   apiKey: "AIzaSyCpBN0NCoZVaheUSADoUqe3D9cmcrDH5x0",
   authDomain: "://firebaseapp.com",
