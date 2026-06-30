@@ -1,15 +1,49 @@
+// 1. CONFIGURACIÓN DE FIREBASE (Tomada exactamente de tu pantalla)
+const firebaseConfig = {
+  apiKey: "AIzaSyCpBN0NCoZVaheUSADoUqe3D9cmcrDH5x0",
+  authDomain: "://firebaseapp.com",
+  databaseURL: "https://firebaseio.com",
+  projectId: "mi-agenda-e7b52",
+  storageBucket: "://appspot.com",
+  messagingSenderId: "322694877658",
+  appId: "1:322694877658:web:d5180909034fd9a2b170e3",
+  measurementId: "G-0HJ5CC02DS"
+};
+
+// 2. INICIALIZACIÓN DE FIREBASE EN INTERNET
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+
 const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
 let selectedYearNum = 2026;
 let selectedMonthIdx = null; 
 let selectedDayNum = null;
-
-const savedNotes = JSON.parse(localStorage.getItem('timeline_notes')) || {};
+let savedNotes = {}; // Se llenará automáticamente de forma remota desde la nube
 
 const fechaDeHoy = new Date();
 const realYear = fechaDeHoy.getFullYear();
 const realMonthIdx = fechaDeHoy.getMonth();
 const realDayNum = fechaDeHoy.getDate();
+
+// ESCUCHADOR EN TIEMPO REAL: Cada vez que agregues o borres una nota en la PC o Celu, Firebase avisa acá
+database.ref('notes').on('value', (snapshot) => {
+    savedNotes = snapshot.val() || {};
+    // Redibujamos todo al instante para que ambos dispositivos vean los cambios en vivo
+    drawGraphicalTimeline();
+    updateEventsList();
+    
+    // Si tienes un día abierto en pantalla, actualizamos el texto y botón por si se editó de forma externa
+    if (selectedMonthIdx !== null && selectedDayNum !== null) {
+        const dateKey = `${selectedYearNum}-${selectedMonthIdx}-${selectedDayNum}`;
+        document.getElementById('note-input').value = savedNotes[dateKey] || "";
+        
+        const submitBtn = document.getElementById('note-submit');
+        const deleteBtn = document.getElementById('note-delete');
+        submitBtn.innerHTML = savedNotes[dateKey] ? "EDITAR<br>NOTA" : "CREAR<br>NOTA";
+        deleteBtn.style.display = savedNotes[dateKey] ? "block" : "none";
+    }
+});
 
 function selectYear(element) {
     handleCentering(element, '#container-years');
@@ -36,7 +70,7 @@ function selectYear(element) {
     
     document.getElementById('graph-panel').classList.remove('hide');
     document.getElementById('events-panel').classList.remove('hide'); 
-    document.getElementById('history-panel').classList.remove('hide'); // Muestra historial
+    document.getElementById('history-panel').classList.remove('hide'); 
     
     drawGraphicalTimeline();
     updateEventsList(); 
@@ -100,40 +134,25 @@ function saveNote() {
     const text = document.getElementById('note-input').value.trim();
     const dateKey = `${selectedYearNum}-${selectedMonthIdx}-${selectedDayNum}`;
 
+    // ENVIAR A INTERNET: En vez de LocalStorage, guardamos la rama directamente en la nube de Firebase
     if (text !== "") {
-        savedNotes[dateKey] = text; 
+        database.ref('notes/' + dateKey).set(text);
     } else {
-        delete savedNotes[dateKey]; 
+        database.ref('notes/' + dateKey).remove();
     }
-
-    localStorage.setItem('timeline_notes', JSON.stringify(savedNotes));
-
-    const submitBtn = document.getElementById('note-submit');
-    const deleteBtn = document.getElementById('note-delete');
-    
-    submitBtn.innerHTML = text !== "" ? "EDITAR<br>NOTA" : "CREAR<br>NOTA";
-    deleteBtn.style.display = text !== "" ? "block" : "none";
-
-    drawGraphicalTimeline();
-    updateEventsList(); 
 }
 
 function deleteNote() {
     const dateKey = `${selectedYearNum}-${selectedMonthIdx}-${selectedDayNum}`;
-    delete savedNotes[dateKey];
-    localStorage.setItem('timeline_notes', JSON.stringify(savedNotes)); 
-
-    document.getElementById('note-input').value = "";
-    document.getElementById('note-submit').innerHTML = "CREAR<br>NOTA";
-    document.getElementById('note-delete').style.display = "none";
-
-    drawGraphicalTimeline();
-    updateEventsList();
+    // BORRAR EN INTERNET: Eliminamos el registro de la nube de Firebase
+    database.ref('notes/' + dateKey).remove();
 }
 /* FUNCIÓN: Divide automáticamente las notas en dos listas: Futuro/Hoy e Historial */
 function updateEventsList() {
     const listElement = document.getElementById('events-list');
     const historyListElement = document.getElementById('history-list');
+    
+    if (!listElement || !historyListElement) return;
     
     listElement.innerHTML = ''; 
     historyListElement.innerHTML = ''; 
@@ -183,7 +202,7 @@ function updateEventsList() {
         });
     }
 
-    // 2. ORDENAMOS Y DETALLAMOS EL HISTORIAL PASADO (El más reciente primero para tenerlo a mano)
+    // 2. ORDENAMOS Y DETALLAMOS EL HISTORIAL PASADO (El más reciente primero)
     historialEventos.sort((a, b) => b.month !== a.month ? b.month - a.month : b.day - a.day);
 
     if (historialEventos.length === 0) {
@@ -191,7 +210,7 @@ function updateEventsList() {
     } else {
         historialEventos.forEach(ev => {
             const card = document.createElement('div');
-            card.className = 'event-card past'; // Estilo suavizado
+            card.className = 'event-card past'; 
             card.style.cursor = 'pointer';
             card.onclick = function() { goToDate(ev.month, ev.day); };
             
@@ -221,6 +240,7 @@ function goToDate(monthIndex, dayNumber) {
 
 function drawGraphicalTimeline() {
     const canvas = document.getElementById('timeline-canvas');
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 

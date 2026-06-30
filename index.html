@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Línea de Tiempo con Agenda e Historial</title>
+    <title>Línea de Tiempo Sincronizada en la Nube</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -44,13 +44,18 @@
             <div id="events-list"></div>
         </div>
 
-        <!-- NUEVO: SECCIÓN DE HISTORIAL DE EVENTOS PASADOS -->
+        <!-- SECCIÓN DE HISTORIAL -->
         <div class="events-container hide" id="history-panel">
             <h3>HISTORIAL DE EVENTOS</h3>
             <div id="history-list"></div>
         </div>
     </div>
 
+    <!-- CONEXIONES COMPLEMENTARIAS: Cargamos las librerías de Firebase de Google -->
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
+    
+    <!-- NUESTRO SCRIPT CON TU LOGICA -->
     <script src="script.js"></script>
 </body>
 </html>
