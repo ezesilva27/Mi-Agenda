@@ -1,58 +1,22 @@
-// 1. VARIABLES ESTRUCTURALES DEL CALENDARIO
 const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+
 let selectedYearNum = 2026;
 let selectedMonthIdx = null; 
 let selectedDayNum = null;
-let savedNotes = {}; 
+
+// RETORNO A LOCALSTORAGE: Almacenamiento rápido en la memoria de la PC
+const savedNotes = JSON.parse(localStorage.getItem('timeline_notes')) || {};
 
 const fechaDeHoy = new Date();
 const realYear = fechaDeHoy.getFullYear();
 const realMonthIdx = fechaDeHoy.getMonth();
 const realDayNum = fechaDeHoy.getDate();
 
-// 2. CONFIGURACIÓN CON TU URL REAL DE LA FOTO (Corregido sin errores)
-const firebaseConfig = {
-  apiKey: "AIzaSyCpBN0NCoZVaheUSADoUqe3D9cmcrDH5x0",
-  authDomain: "://firebaseapp.com",
-  databaseURL: "https://firebaseio.com", 
-  projectId: "mi-agenda-e7b52",
-  storageBucket: "://appspot.com",
-  messagingSenderId: "322694877658",
-  appId: "1:322694877658:web:d5180909034fd9a2b170e3"
-};
-
-// 3. CONEXIÓN A INTERNET NATIVA
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-}
-const database = firebase.database();
-
-// ESCUCHADOR ACTIVO EN TIEMPO REAL
-database.ref('notes').on('value', (snapshot) => {
-    savedNotes = snapshot.val() || {};
-    drawGraphicalTimeline();
-    updateEventsList();
-    
-    if (selectedMonthIdx !== null && selectedDayNum !== null) {
-        const dateKey = `${selectedYearNum}-${selectedMonthIdx}-${selectedDayNum}`;
-        const input = document.getElementById('note-input');
-        const submitBtn = document.getElementById('note-submit');
-        const deleteBtn = document.getElementById('note-delete');
-        
-        if (input) input.value = savedNotes[dateKey] || "";
-        if (submitBtn && deleteBtn) {
-            submitBtn.innerHTML = savedNotes[dateKey] ? "EDITAR<br>NOTA" : "CREAR<br>NOTA";
-            deleteBtn.style.display = savedNotes[dateKey] ? "block" : "none";
-        }
-    }
-});
-
 function selectYear(element) {
     handleCentering(element, '#container-years');
     
     const containerMonths = document.getElementById('container-months');
     const trackMonths = document.getElementById('track-months');
-    if (!trackMonths) return;
     trackMonths.innerHTML = '';
     
     meses.forEach((mes, index) => {
@@ -67,7 +31,7 @@ function selectYear(element) {
     selectedMonthIdx = null;
     selectedDayNum = null;
 
-    if (containerMonths) containerMonths.classList.remove('hide');
+    containerMonths.classList.remove('hide');
     document.getElementById('container-days').classList.add('hide');
     document.getElementById('note-panel').classList.add('hide'); 
     
@@ -78,7 +42,7 @@ function selectYear(element) {
     drawGraphicalTimeline();
     updateEventsList(); 
     
-    if (containerMonths) enableWheelScroll(containerMonths);
+    enableWheelScroll(containerMonths);
 }
 
 function selectMonth(element, monthIndex) {
@@ -88,7 +52,6 @@ function selectMonth(element, monthIndex) {
 
     const containerDays = document.getElementById('container-days');
     const trackDays = document.getElementById('track-days');
-    if (!trackDays) return;
     trackDays.innerHTML = '';
 
     const totalDias = new Date(selectedYearNum, monthIndex + 1, 0).getDate();
@@ -102,12 +65,12 @@ function selectMonth(element, monthIndex) {
         trackDays.appendChild(btn);
     }
     
-    if (containerDays) containerDays.classList.remove('hide');
+    containerDays.classList.remove('hide');
     document.getElementById('note-panel').classList.add('hide'); 
     
     drawGraphicalTimeline();
     
-    if (containerDays) enableWheelScroll(containerDays);
+    enableWheelScroll(containerDays);
 }
 
 function selectDay(element, dayNumber) {
@@ -121,16 +84,14 @@ function selectDay(element, dayNumber) {
     const submitBtn = document.getElementById('note-submit');
     const deleteBtn = document.getElementById('note-delete');
 
-    if (input) input.value = savedNotes[dateKey] || "";
+    input.value = savedNotes[dateKey] || "";
 
-    if (submitBtn && deleteBtn) {
-        if (savedNotes[dateKey]) {
-            submitBtn.innerHTML = "EDITAR<br>NOTA";
-            deleteBtn.style.display = "block"; 
-        } else {
-            submitBtn.innerHTML = "CREAR<br>NOTA";
-            deleteBtn.style.display = "none";  
-        }
+    if (savedNotes[dateKey]) {
+        submitBtn.innerHTML = "EDITAR<br>NOTA";
+        deleteBtn.style.display = "block"; 
+    } else {
+        submitBtn.innerHTML = "CREAR<br>NOTA";
+        deleteBtn.style.display = "none";  
     }
 
     drawGraphicalTimeline();
@@ -141,15 +102,34 @@ function saveNote() {
     const dateKey = `${selectedYearNum}-${selectedMonthIdx}-${selectedDayNum}`;
 
     if (text !== "") {
-        database.ref('notes/' + dateKey).set(text);
+        savedNotes[dateKey] = text; 
     } else {
-        database.ref('notes/' + dateKey).remove();
+        delete savedNotes[dateKey]; 
     }
+
+    localStorage.setItem('timeline_notes', JSON.stringify(savedNotes));
+
+    const submitBtn = document.getElementById('note-submit');
+    const deleteBtn = document.getElementById('note-delete');
+    
+    submitBtn.innerHTML = text !== "" ? "EDITAR<br>NOTA" : "CREAR<br>NOTA";
+    deleteBtn.style.display = text !== "" ? "block" : "none";
+
+    drawGraphicalTimeline();
+    updateEventsList(); 
 }
 
 function deleteNote() {
     const dateKey = `${selectedYearNum}-${selectedMonthIdx}-${selectedDayNum}`;
-    database.ref('notes/' + dateKey).remove();
+    delete savedNotes[dateKey];
+    localStorage.setItem('timeline_notes', JSON.stringify(savedNotes)); 
+
+    document.getElementById('note-input').value = "";
+    document.getElementById('note-submit').innerHTML = "CREAR<br>NOTA";
+    document.getElementById('note-delete').style.display = "none";
+
+    drawGraphicalTimeline();
+    updateEventsList();
 }
 /* FUNCIÓN: Divide automáticamente las notas en dos listas: Futuro/Hoy e Historial */
 function updateEventsList() {
