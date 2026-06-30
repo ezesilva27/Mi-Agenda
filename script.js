@@ -1,4 +1,4 @@
-// 1. CONFIGURACIÓN DE FIREBASE (Tomada exactamente de tu pantalla)
+// 1. CONFIGURACIÓN DE FIREBASE CORREGIDA
 const firebaseConfig = {
   apiKey: "AIzaSyCpBN0NCoZVaheUSADoUqe3D9cmcrDH5x0",
   authDomain: "://firebaseapp.com",
@@ -6,11 +6,10 @@ const firebaseConfig = {
   projectId: "mi-agenda-e7b52",
   storageBucket: "://appspot.com",
   messagingSenderId: "322694877658",
-  appId: "1:322694877658:web:d5180909034fd9a2b170e3",
-  measurementId: "G-0HJ5CC02DS"
+  appId: "1:322694877658:web:d5180909034fd9a2b170e3"
 };
 
-// 2. INICIALIZACIÓN DE FIREBASE EN INTERNET
+// 2. INICIALIZACIÓN EN INTERNET
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 
@@ -19,21 +18,19 @@ const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "
 let selectedYearNum = 2026;
 let selectedMonthIdx = null; 
 let selectedDayNum = null;
-let savedNotes = {}; // Se llenará automáticamente de forma remota desde la nube
+let savedNotes = {}; 
 
 const fechaDeHoy = new Date();
 const realYear = fechaDeHoy.getFullYear();
 const realMonthIdx = fechaDeHoy.getMonth();
 const realDayNum = fechaDeHoy.getDate();
 
-// ESCUCHADOR EN TIEMPO REAL: Cada vez que agregues o borres una nota en la PC o Celu, Firebase avisa acá
+// ESCUCHADOR EN TIEMPO REAL
 database.ref('notes').on('value', (snapshot) => {
     savedNotes = snapshot.val() || {};
-    // Redibujamos todo al instante para que ambos dispositivos vean los cambios en vivo
     drawGraphicalTimeline();
     updateEventsList();
     
-    // Si tienes un día abierto en pantalla, actualizamos el texto y botón por si se editó de forma externa
     if (selectedMonthIdx !== null && selectedDayNum !== null) {
         const dateKey = `${selectedYearNum}-${selectedMonthIdx}-${selectedDayNum}`;
         document.getElementById('note-input').value = savedNotes[dateKey] || "";
@@ -134,7 +131,6 @@ function saveNote() {
     const text = document.getElementById('note-input').value.trim();
     const dateKey = `${selectedYearNum}-${selectedMonthIdx}-${selectedDayNum}`;
 
-    // ENVIAR A INTERNET: En vez de LocalStorage, guardamos la rama directamente en la nube de Firebase
     if (text !== "") {
         database.ref('notes/' + dateKey).set(text);
     } else {
@@ -144,7 +140,6 @@ function saveNote() {
 
 function deleteNote() {
     const dateKey = `${selectedYearNum}-${selectedMonthIdx}-${selectedDayNum}`;
-    // BORRAR EN INTERNET: Eliminamos el registro de la nube de Firebase
     database.ref('notes/' + dateKey).remove();
 }
 /* FUNCIÓN: Divide automáticamente las notas en dos listas: Futuro/Hoy e Historial */
