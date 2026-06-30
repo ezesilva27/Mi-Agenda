@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Línea de Tiempo Sincronizada en la Nube</title>
+    <title>Línea de Tiempo Sincronizada</title>
     
-    <!-- Vinculamos los estilos CSS -->
+    <!-- Enlace de diseño básico -->
     <link rel="stylesheet" href="style.css">
 
-    <!-- CORRECCIÓN CLAVE: Cargamos las librerías de Firebase ARRIBA para que estén listas antes que tu script -->
+    <!-- Librerías oficiales de Google Firebase indispensables -->
     <script src="https://gstatic.com"></script>
     <script src="https://gstatic.com"></script>
 </head>
@@ -57,7 +57,7 @@
         </div>
     </div>
 
-    <!-- Vinculamos tu archivo lógico abajo de todo -->
-    <script src="script.js"></script>
+    <!-- EL TRUCO: Le agregamos "?v=2" para obligar al navegador a descartar el script viejo bloqueado -->
+    <script src="script.js?v=2"></script>
 </body>
 </html>

@@ -1,20 +1,5 @@
-// 1. CONFIGURACIÓN DE FIREBASE CORREGIDA (Sin la URL manual que generaba el conflicto)
-const firebaseConfig = {
-  apiKey: "AIzaSyCpBN0NCoZVaheUSADoUqe3D9cmcrDH5x0",
-  authDomain: "://firebaseapp.com",
-  databaseURL: "https://firebaseio.com", // <--- Corregido con la barra fija final de tu foto
-  projectId: "mi-agenda-e7b52",
-  storageBucket: "://appspot.com",
-  messagingSenderId: "322694877658",
-  appId: "1:322694877658:web:d5180909034fd9a2b170e3"
-};
-
-// 2. INICIALIZACIÓN EN INTERNET
-firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
-
+// 1. VARIABLES ESTRUCTURALES PRINCIPALES
 const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-
 let selectedYearNum = 2026;
 let selectedMonthIdx = null; 
 let selectedDayNum = null;
@@ -25,7 +10,22 @@ const realYear = fechaDeHoy.getFullYear();
 const realMonthIdx = fechaDeHoy.getMonth();
 const realDayNum = fechaDeHoy.getDate();
 
-// ESCUCHADOR EN TIEMPO REAL
+// 2. CREDENCIALES DE TU PROYECTO FIREBASE REAL
+const firebaseConfig = {
+  apiKey: "AIzaSyCpBN0NCoZVaheUSADoUqe3D9cmcrDH5x0",
+  authDomain: "mi-agenda-e7b52.firebaseapp.com",
+  databaseURL: "https://mi-agenda-e7b52-default-rtdb.firebaseio.com/", 
+  projectId: "mi-agenda-e7b52",
+  storageBucket: "://appspot.com",
+  messagingSenderId: "322694877658",
+  appId: "1:322694877658:web:d5180909034fd9a2b170e3"
+};
+
+// 3. INICIALIZACIÓN DE LA RED
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+
+// ESCUCHADOR EN TIEMPO REAL DESDE LA NUBE
 database.ref('notes').on('value', (snapshot) => {
     savedNotes = snapshot.val() || {};
     drawGraphicalTimeline();
@@ -33,10 +33,11 @@ database.ref('notes').on('value', (snapshot) => {
     
     if (selectedMonthIdx !== null && selectedDayNum !== null) {
         const dateKey = `${selectedYearNum}-${selectedMonthIdx}-${selectedDayNum}`;
-        document.getElementById('note-input').value = savedNotes[dateKey] || "";
-        
+        const input = document.getElementById('note-input');
         const submitBtn = document.getElementById('note-submit');
         const deleteBtn = document.getElementById('note-delete');
+        
+        if (input) input.value = savedNotes[dateKey] || "";
         if (submitBtn && deleteBtn) {
             submitBtn.innerHTML = savedNotes[dateKey] ? "EDITAR<br>NOTA" : "CREAR<br>NOTA";
             deleteBtn.style.display = savedNotes[dateKey] ? "block" : "none";
@@ -161,7 +162,6 @@ function updateEventsList() {
     const proximosEventos = [];
     const historialEventos = [];
 
-    // Clasificamos cada nota guardada comparándola con la fecha de hoy
     for (const key in savedNotes) {
         const [y, m, d] = key.split('-').map(Number);
         const esFuturoOHoy = y > realYear || 
@@ -177,7 +177,6 @@ function updateEventsList() {
         }
     }
 
-    // 1. ORDENAMOS Y DETALLAMOS LOS PRÓXIMOS EVENTOS (El más cercano primero)
     proximosEventos.sort((a, b) => a.month !== b.month ? a.month - b.month : a.day - b.day);
 
     if (proximosEventos.length === 0) {
@@ -203,7 +202,6 @@ function updateEventsList() {
         });
     }
 
-    // 2. ORDENAMOS Y DETALLAMOS EL HISTORIAL PASADO (El más reciente primero)
     historialEventos.sort((a, b) => b.month !== a.month ? b.month - a.month : b.day - a.day);
 
     if (historialEventos.length === 0) {
@@ -224,7 +222,6 @@ function updateEventsList() {
     }
 }
 
-// FUNCIÓN DE VIAJE AUTOMÁTICO
 function goToDate(monthIndex, dayNumber) {
     const monthBtn = document.getElementById(`month-btn-${monthIndex}`);
     if (monthBtn) {
