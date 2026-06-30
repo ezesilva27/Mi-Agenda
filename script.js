@@ -10,7 +10,7 @@ const realYear = fechaDeHoy.getFullYear();
 const realMonthIdx = fechaDeHoy.getMonth();
 const realDayNum = fechaDeHoy.getDate();
 
-// 2. CREDENCIALES DE TU PROYECTO FIREBASE
+// 2. CONFIGURACIÓN CON TU SERVIDOR REAL DE ESTADOS UNIDOS (Corregido)
 const firebaseConfig = {
   apiKey: "AIzaSyCpBN0NCoZVaheUSADoUqe3D9cmcrDH5x0",
   authDomain: "://firebaseapp.com",
@@ -21,11 +21,13 @@ const firebaseConfig = {
   appId: "1:322694877658:web:d5180909034fd9a2b170e3"
 };
 
-// 3. CONEXIÓN A INTERNET
-firebase.initializeApp(firebaseConfig);
+// 3. CONEXIÓN A INTERNET NATIVA
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
 const database = firebase.database();
 
-// ESCUCHADOR EN TIEMPO REAL DESDE LA NUBE
+// ESCUCHADOR ACTIVO EN TIEMPO REAL
 database.ref('notes').on('value', (snapshot) => {
     savedNotes = snapshot.val() || {};
     drawGraphicalTimeline();
