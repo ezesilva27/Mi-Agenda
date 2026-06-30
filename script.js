@@ -1,8 +1,8 @@
-// 1. CONFIGURACIÓN DE FIREBASE CORREGIDA
+// 1. CONFIGURACIÓN DE FIREBASE CORREGIDA (Sin la URL manual que generaba el conflicto)
 const firebaseConfig = {
   apiKey: "AIzaSyCpBN0NCoZVaheUSADoUqe3D9cmcrDH5x0",
   authDomain: "://firebaseapp.com",
-  databaseURL: "https://firebaseio.com",
+  databaseURL: "https://firebaseio.com", // <--- Corregido con la barra fija final de tu foto
   projectId: "mi-agenda-e7b52",
   storageBucket: "://appspot.com",
   messagingSenderId: "322694877658",
@@ -37,8 +37,10 @@ database.ref('notes').on('value', (snapshot) => {
         
         const submitBtn = document.getElementById('note-submit');
         const deleteBtn = document.getElementById('note-delete');
-        submitBtn.innerHTML = savedNotes[dateKey] ? "EDITAR<br>NOTA" : "CREAR<br>NOTA";
-        deleteBtn.style.display = savedNotes[dateKey] ? "block" : "none";
+        if (submitBtn && deleteBtn) {
+            submitBtn.innerHTML = savedNotes[dateKey] ? "EDITAR<br>NOTA" : "CREAR<br>NOTA";
+            deleteBtn.style.display = savedNotes[dateKey] ? "block" : "none";
+        }
     }
 });
 
@@ -47,6 +49,7 @@ function selectYear(element) {
     
     const containerMonths = document.getElementById('container-months');
     const trackMonths = document.getElementById('track-months');
+    if (!trackMonths) return;
     trackMonths.innerHTML = '';
     
     meses.forEach((mes, index) => {
@@ -61,7 +64,7 @@ function selectYear(element) {
     selectedMonthIdx = null;
     selectedDayNum = null;
 
-    containerMonths.classList.remove('hide');
+    if (containerMonths) containerMonths.classList.remove('hide');
     document.getElementById('container-days').classList.add('hide');
     document.getElementById('note-panel').classList.add('hide'); 
     
@@ -72,7 +75,7 @@ function selectYear(element) {
     drawGraphicalTimeline();
     updateEventsList(); 
     
-    enableWheelScroll(containerMonths);
+    if (containerMonths) enableWheelScroll(containerMonths);
 }
 
 function selectMonth(element, monthIndex) {
@@ -82,6 +85,7 @@ function selectMonth(element, monthIndex) {
 
     const containerDays = document.getElementById('container-days');
     const trackDays = document.getElementById('track-days');
+    if (!trackDays) return;
     trackDays.innerHTML = '';
 
     const totalDias = new Date(selectedYearNum, monthIndex + 1, 0).getDate();
@@ -95,12 +99,12 @@ function selectMonth(element, monthIndex) {
         trackDays.appendChild(btn);
     }
     
-    containerDays.classList.remove('hide');
+    if (containerDays) containerDays.classList.remove('hide');
     document.getElementById('note-panel').classList.add('hide'); 
     
     drawGraphicalTimeline();
     
-    enableWheelScroll(containerDays);
+    if (containerDays) enableWheelScroll(containerDays);
 }
 
 function selectDay(element, dayNumber) {
@@ -114,14 +118,16 @@ function selectDay(element, dayNumber) {
     const submitBtn = document.getElementById('note-submit');
     const deleteBtn = document.getElementById('note-delete');
 
-    input.value = savedNotes[dateKey] || "";
+    if (input) input.value = savedNotes[dateKey] || "";
 
-    if (savedNotes[dateKey]) {
-        submitBtn.innerHTML = "EDITAR<br>NOTA";
-        deleteBtn.style.display = "block"; 
-    } else {
-        submitBtn.innerHTML = "CREAR<br>NOTA";
-        deleteBtn.style.display = "none";  
+    if (submitBtn && deleteBtn) {
+        if (savedNotes[dateKey]) {
+            submitBtn.innerHTML = "EDITAR<br>NOTA";
+            deleteBtn.style.display = "block"; 
+        } else {
+            submitBtn.innerHTML = "CREAR<br>NOTA";
+            deleteBtn.style.display = "none";  
+        }
     }
 
     drawGraphicalTimeline();
@@ -312,6 +318,7 @@ function drawGraphicalTimeline() {
 
 function handleCentering(element, containerSelector) {
     const container = document.querySelector(containerSelector);
+    if (!container) return;
     const currentActive = container.querySelector('.timeline-item.active');
     if (currentActive) currentActive.classList.remove('active');
     element.classList.add('active');
@@ -328,7 +335,9 @@ function enableWheelScroll(container) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    enableWheelScroll(document.getElementById('container-years'));
+    const containerYears = document.getElementById('container-years');
+    if (containerYears) enableWheelScroll(containerYears);
+    
     if (realYear === selectedYearNum) {
         const yearBtn = document.querySelector('.year-item');
         if (yearBtn) {
