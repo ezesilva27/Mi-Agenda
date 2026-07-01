@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Línea de Tiempo Local</title>
+    <title>Línea de Tiempo con Control Financiero</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -28,7 +28,7 @@
 
         <!-- PANEL DE NOTAS -->
         <div class="note-container hide" id="note-panel">
-            <input type="text" id="note-input" placeholder="ESCRIBIR NOTA ACÁ" autocomplete="off">
+            <input type="text" id="note-input" placeholder="ESCRIBIR NOTA ACÁ (Usa $ para deudas)" autocomplete="off">
             <button id="note-delete" onclick="deleteNote()">BORRAR</button>
             <button id="note-submit" onclick="saveNote()">CREAR<br>NOTA</button>
         </div>
@@ -38,20 +38,47 @@
             <canvas id="timeline-canvas" width="600" height="120"></canvas>
         </div>
 
-        <!-- SECCIÓN DE PRÓXIMOS EVENTOS -->
+        <!-- REQUERIMIENTO 1: SECCIÓN DE PRÓXIMOS EVENTOS (MINIMIZABLE) -->
         <div class="events-container hide" id="events-panel">
-            <h3>PRÓXIMOS EVENTOS</h3>
-            <div id="events-list"></div>
+            <div class="panel-header" onclick="togglePanel('events-list', 'arrow-events')">
+                <h3>PRÓXIMOS EVENTOS</h3>
+                <span class="toggle-arrow" id="arrow-events">▼</span>
+            </div>
+            <div id="events-list" class="collapsible-content"></div>
         </div>
 
         <!-- SECCIÓN DE HISTORIAL -->
         <div class="events-container hide" id="history-panel">
-            <h3>HISTORIAL DE EVENTOS</h3>
-            <div id="history-list"></div>
+            <div class="panel-header" onclick="togglePanel('history-list', 'arrow-history')">
+                <h3>HISTORIAL DE EVENTOS</h3>
+                <span class="toggle-arrow" id="arrow-history">▼</span>
+            </div>
+            <div id="history-list" class="collapsible-content"></div>
+        </div>
+
+        <!-- REQUERIMIENTO 3: NUEVO MÓDULO FINANCIERO -->
+        <div class="events-container hide" id="finance-panel">
+            <h3>CONTROL DE CAJA</h3>
+            <div class="finance-board">
+                <div class="finance-card">
+                    <label>DINERO DISPONIBLE</label>
+                    <div class="input-currency-wrapper">
+                        <span>$</span>
+                        <input type="number" id="finance-available" value="0" oninput="updateFinanceUI()" placeholder="0">
+                    </div>
+                </div>
+                <div class="finance-card">
+                    <label>DEUDAS TOTALES</label>
+                    <div class="finance-value font-red" id="finance-debts">$0</div>
+                </div>
+                <div class="finance-card">
+                    <label>BALANCE FINAL</label>
+                    <div class="finance-value" id="finance-balance">$0</div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Volvemos al script local estándar -->
     <script src="script.js"></script>
 </body>
 </html>
